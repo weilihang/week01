@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weilihang.mapper.HerosMapper">
+	<resultMap type="com.weilihang.bean.Heros" id="rm">
+		<id column="hid" property="hid"/>
+		<result column="hname" property="hname"/>
+		<result column="hprice" property="hprice"/>
+		<result column="huptime" property="huptime"/>
+		<result column="hstatus" property="hstatus"/>
+		<association property="camp" javaType="com.weilihang.bean.Camp">
+			<id column="cid" property="cid"/>
+			<result column="cname" property="cname"/>
+		</association>
+	</resultMap>
+	
+	<select id="findAll" parameterType="map" resultMap="rm">
+	SELECT * FROM t_heros h,t_camp c WHERE h.`cid`=c.`cid` 
+	<if test="cid!=null and cid !=''">
+	and cid=#{cid}
+	</if>
+	<if test="hstatus!=null and hstatus !=''">
+	and hstatus=#{hstatus}
+	</if>
+	<if test="stprice !=null and endprice !=null" >
+	and #{stprice} &lt;=hprice and #{endprice} >=hprice
+	</if>
+	
+	</select>
+	<insert id="insertHeros" parameterType="com.weilihang.bean.Heros">
+	insert into t_heros(hname,hprice,cid,huptime,hstatus) 
+	values(#{hname},#{hprice},#{cid},#{huptime},#{hstatus})
+	</insert>
+	<select id="findHeroByid">
+	SELECT * FROM t_heros h,t_camp c WHERE h.`cid`=c.`cid`
+	 and hid=#{hid}
+	</select>
+	<select id="findCamp" parameterType="com.weilihang.bean.Camp" resultType="com.weilihang.bean.Camp">
+		select * from t_camp
+	</select>
+	<update id="upHero" parameterType="com.weilihang.bean.Heros">
+		update t_heros 
+		<set>
+			<if test="hstatus!=null and hstatus!=''">
+			hstatus=#{hstatus}	
+			</if>
+		</set>
+		<where>
+			hid=#{hid}
+		</where>
+	</update>
+	
+</mapper>
